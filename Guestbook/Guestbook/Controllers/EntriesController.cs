@@ -19,6 +19,11 @@ namespace Guestbook.Controllers
 
         public async Task<IActionResult> Index(string? searchString, int pageNumber = 1, int pageSize = 5)
         {
+            if (searchString != null && searchString.Length < 3)
+            {
+                searchString = null;
+            }
+
             ViewData["CurrentFilter"] = searchString;
             ViewData["CurrentPageSize"] = pageSize;
             ViewData["CurrentPageNumber"] = pageNumber;

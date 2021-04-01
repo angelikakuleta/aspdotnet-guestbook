@@ -11,9 +11,12 @@
 </p>
 <form id="filter" asp-action="Index" method="get">
     <p>
-        Find by phrase: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+        Find by phrase: <input type="text" minlength="3" name="searchString" value="@ViewData["CurrentFilter"]" />
         <input type="submit" value="Filter" class="btn btn-default" />
         <a asp-action="Index">Back to Full List</a>
+    </p>
+    <p>
+        <span id="validation-find" class="text-danger"></span>
     </p>
     Page Size:
     <select id="pageSize" name="pageSize">
@@ -77,23 +80,40 @@
 }
 
 <a asp-action="Index"
-   asp-route-pageNumber="@(Model.PageNumber - 1)"
    asp-route-searchString="@ViewData["CurrentFilter"]"
+   asp-route-pageNumber="@(Model.PageNumber - 1)"
    asp-route-pageSize="@ViewData["CurrentPageSize"]"
    class="btn btn-default @prevDisabled">
     Previous
 </a>
-<a asp-action="Index"
-   asp-route-pageNumber="@(Model.PageNumber + 1)"
+<a asp-action="Index" 
    asp-route-searchString="@ViewData["CurrentFilter"]"
+    asp-route-pageNumber="@(Model.PageNumber + 1)"
    asp-route-pageSize="@ViewData["CurrentPageSize"]"
    class="btn btn-default @nextDisabled">
     Next
 </a>
 
 <script type="text/javascript">
+    const form = document.getElementById("filter");
+
+    form.setAttribute("novalidate", true);
+
+    form.addEventListener("submit", e => {
+        e.preventDefault();
+
+        if (!form.querySelector("input[name=searchString]").checkValidity()) {
+            SetErrorMessage('Enter at least 3 characters.')
+        }
+        else {
+            form.submit();
+        }
+    });
+
     document.querySelector('#pageSize option[value="@ViewData["CurrentPageSize"]"]').setAttribute("selected", "selected");
-    document.getElementById("pageSize").onchange = function() {
-        document.getElementById("filter").submit()
+    document.getElementById("pageSize").onchange = () => form.submit();
+
+    let SetErrorMessage = (message) => {
+        document.getElementById("validation-find").innerHTML = message;
     }
 </script>
