@@ -1,10 +1,9 @@
 ﻿using DataAccessLayer.Context;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories;
-using Microsoft.AspNetCore.Http;
+using Guestbook.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Guestbook.Controllers
@@ -18,9 +17,16 @@ namespace Guestbook.Controllers
             _entries = new EntryRepository(context);
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? searchString, int pageNumber = 1, int pageSize = 5)
         {
-            return View(await _entries.GetAll());
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["CurrentPageSize"] = pageSize;
+            ViewData["CurrentPageNumber"] = pageNumber;
+
+            var count = await _entries.Count(searchString);
+            var entries = await _entries.GetAll(searchString, pageNumber, pageSize);
+
+            return View(new PaginatedList<Entry>(entries, count, pageNumber, pageSize));
         }
 
         public async Task<ActionResult> Details(int? id)
