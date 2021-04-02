@@ -4,12 +4,11 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>Create new entry</h1>
 
-<h4>Entry</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form method="post" asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -24,7 +23,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Comment" class="control-label"></label>
-                <textarea asp-for="Comment" class="form-control"></textarea>
+                <textarea asp-for="Comment" class="form-control" style="height: 12rem"></textarea>
                 <span asp-validation-for="Comment" class="text-danger"></span>
             </div>
             <div class="form-group">

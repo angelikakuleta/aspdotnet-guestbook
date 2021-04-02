@@ -4,95 +4,86 @@
     ViewData["Title"] = "Entries";
 }
 
-<h1>Entries</h1>
+<div class="jumbotron">
+    <h1 class="display-4">Hello, world!</h1>
+    <p class="lead">Check out our guest book and give a new meaning to a message.</p>
+    <hr class="my-4">
+    <p>Visitor to acknowledge a visit to a site can leave details such as their name, electronic address and any comments.</p>
+    <a asp-action="Create" class="btn btn-primary btn-lg" role="button">Create new entry</a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <form id="filter" asp-action="Index" method="get">
-    <p>
-        Find by phrase: <input type="text" minlength="3" name="searchString" value="@ViewData["CurrentFilter"]" />
-        <input type="submit" value="Filter" class="btn btn-default" />
-        <a asp-action="Index">Back to Full List</a>
-    </p>
+    <div class="form-inline mb-2">
+        <span class="mr-sm-2">Find by phrase</span>
+        <input class="form-control mr-sm-2" type="text" minlength="3" name="searchString" value="@ViewData["CurrentFilter"]" />
+        <input type="submit" value="Filter" class="btn btn-outline-secondary my-2 my-sm-0" />
+    </div>
     <p>
         <span id="validation-find" class="text-danger"></span>
     </p>
-    Page Size:
-    <select id="pageSize" name="pageSize">
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="25">25</option>
-    </select>
-    | Go to page
-    <input id="pageNumber" name="pageNumber" type="number" min="1" max="@Model.TotalPages" class="" />
-    <input type="submit" value="Go" class="btn btn-default" />
-    <p>
-        @Model.Count from @Model.TotalItems | page @ViewData["CurrentPageNumber"] / @Model.TotalPages
-    </p>
+    
+    <div class="d-flex justify-content-between">
+        <div>
+            <a asp-action="Index">Back to Full List</a>
+            <p>
+                @Model.Count from @Model.TotalItems entries | page @ViewData["CurrentPageNumber"] / @Model.TotalPages
+            </p>
+        </div>      
+        <div class="form-inline">
+            <span class="mr-sm-2">Entries on page</span>
+            <select class="form-control mr-sm-2" id="pageSize" name="pageSize">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+            </select>
+        </div>
+    </div>
 </form>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Name
-            </th>
-            <th>
-                Email
-            </th>
-            <th>
-                Comment
-            </th>
-            <th>
-                Entry time
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Comment)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryTime)
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+@foreach (var item in Model)
+{
+    <div class="card mt-4 mb-4">
+        <div class="card-header">
+            @Html.DisplayFor(modelItem => item.Name) (@Html.DisplayFor(modelItem => item.Email))
+        </div>
+        <div class="card-body">
+            <footer class="blockquote-footer">Entered on <i>@Html.DisplayFor(modelItem => item.EntryTime)</i></footer>
+            <p class="card-text">@Html.DisplayFor(modelItem => item.Comment).</p> 
+            <div class="text-right">
+                <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Details</a>
+            </div>
+        </div>
+    </div>
+}
 
 @{
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 
-<a asp-action="Index"
-   asp-route-searchString="@ViewData["CurrentFilter"]"
-   asp-route-pageNumber="@(Model.PageNumber - 1)"
-   asp-route-pageSize="@ViewData["CurrentPageSize"]"
-   class="btn btn-default @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index" 
-   asp-route-searchString="@ViewData["CurrentFilter"]"
-    asp-route-pageNumber="@(Model.PageNumber + 1)"
-   asp-route-pageSize="@ViewData["CurrentPageSize"]"
-   class="btn btn-default @nextDisabled">
-    Next
-</a>
+<div class="d-flex justify-content-between">
+    <div>
+        <a asp-action="Index"
+           asp-route-searchString="@ViewData["CurrentFilter"]"
+           asp-route-pageNumber="@(Model.PageNumber - 1)"
+           asp-route-pageSize="@ViewData["CurrentPageSize"]"
+           class="btn btn-default @prevDisabled">
+            Previous
+        </a>
+        <a asp-action="Index"
+           asp-route-searchString="@ViewData["CurrentFilter"]"
+           asp-route-pageNumber="@(Model.PageNumber + 1)"
+           asp-route-pageSize="@ViewData["CurrentPageSize"]"
+           class="btn btn-default @nextDisabled">
+            Next
+        </a>
+    </div>
+    <div class="form-inline">
+        <span class="mr-sm-2">Go to page</span>
+        <input class="form-control mr-sm-2" id="pageNumber" name="pageNumber" type="number" min="1" max="@Model.TotalPages" form="filter" />
+        <input class="btn btn-outline-secondary my-2 my-sm-0" type="submit" value="Go" form="filter" />
+    </div>
+</div>
 
 <script type="text/javascript">
     const form = document.getElementById("filter");
