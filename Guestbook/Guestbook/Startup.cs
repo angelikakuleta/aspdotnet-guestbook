@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace Guestbook
 {
@@ -24,8 +25,11 @@ namespace Guestbook
             services.AddDbContext<GuestbookContext>(
                  options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<GuestbookContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>(option =>
+            {
+                option.Lockout.MaxFailedAccessAttempts = 5;
+                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+            }).AddEntityFrameworkStores<GuestbookContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 

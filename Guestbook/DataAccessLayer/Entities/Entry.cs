@@ -16,7 +16,7 @@ namespace DataAccessLayer.Entities
 
         [Required]
         [MaxLength(50)]
-        [RegularExpression(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$", ErrorMessage = "Email is not valid.")]
+        [EmailAddress]
         public string Email { get; set; }
 
         [Required]
