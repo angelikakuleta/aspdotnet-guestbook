@@ -1,8 +1,11 @@
 ﻿using DataAccessLayer.Entities;
 using Guestbook.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Guestbook.Controllers
@@ -11,11 +14,15 @@ namespace Guestbook.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IEmailSender emailSender, IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [Authorize]
@@ -56,13 +63,46 @@ namespace Guestbook.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);    
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userID = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                    var pathToTempalte = _webHostEnvironment.WebRootPath + Path.DirectorySeparatorChar.ToString()
+                        + "templates" + Path.DirectorySeparatorChar.ToString() + "ConfirmEmail.html";
+                    string htmlBody = "";
+
+                    using (StreamReader sr = System.IO.File.OpenText(pathToTempalte))
+                    {
+                        htmlBody = sr.ReadToEnd();
+                    }
+                    htmlBody = string.Format(htmlBody, callbackUrl);
+
+                    await _emailSender.SendEmailAsync(model.Email, 
+                        "Welcome to Guestbook! Confirm Your Email",
+                        htmlBody);
+ 
                     return LocalRedirect(returnUrl);
                 }
                 AddError(result);
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return View("Error");
+            }
+            
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
         public IActionResult Login(string returnUrl)
@@ -90,6 +130,10 @@ namespace Guestbook.Controllers
                 else if (result.IsLockedOut)
                 {
                     ModelState.AddModelError(string.Empty, "This account has been locked out, please try again later.");
+                }
+                else if (result.IsNotAllowed)
+                {
+                    ModelState.AddModelError(string.Empty, "You have to confirm your email.");
                 }
                 else
                 {
