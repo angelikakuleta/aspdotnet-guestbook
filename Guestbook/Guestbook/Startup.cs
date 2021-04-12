@@ -1,6 +1,7 @@
 using DataAccessLayer.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,8 @@ namespace Guestbook
             services.AddDbContext<GuestbookContext>(
                  options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<GuestbookContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
@@ -43,7 +46,7 @@ namespace Guestbook
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

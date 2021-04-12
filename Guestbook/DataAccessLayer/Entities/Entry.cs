@@ -25,5 +25,8 @@ namespace DataAccessLayer.Entities
 
         [Required]
         public DateTime EntryTime { get; set; }
+
+        [Required]
+        public bool IsConfirmed { get; set; }
     }
 }
