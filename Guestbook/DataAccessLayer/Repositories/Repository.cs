@@ -24,7 +24,7 @@ namespace DataAccessLayer.Repositories
             await dbSet.AddAsync(entity);
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(object id)
         {
             return await dbSet.FindAsync(id);
         }
@@ -54,11 +54,6 @@ namespace DataAccessLayer.Repositories
         public void Remove(T entity)
         {
             dbSet.Remove(entity);
-        }
-
-        public async Task Save()
-        {
-            await _db.SaveChangesAsync();
         }
     }
 }

@@ -1,5 +1,8 @@
 ﻿@model DataAccessLayer.Entities.Entry
 
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
 @{
     ViewData["Title"] = "Create";
 }
@@ -14,12 +17,26 @@
             <div asp-validation-summary="ModelOnly" class="text-danger validation"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <input asp-for="Name" value="@ViewData["UserName"]" class="form-control" readonly />
+                }
+                else
+                {
+                    <input asp-for="Name" class="form-control" />
+                }
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <input asp-for="Email" value="@ViewData["UserEmail"]" class="form-control" readonly />
+                }
+                else
+                {
+                    <input asp-for="Email" class="form-control"/>
+                }
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">

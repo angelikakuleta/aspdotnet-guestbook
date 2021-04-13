@@ -59,8 +59,8 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
 }
 .footer {
   position: absolute;
@@ -73,4 +73,49 @@ body {
 .validation ul {
     list-style: none;
     padding: 0;
+}
+
+.btn-primary {
+    background-color: #1b998b;
+    border: none;
+}
+
+    .btn-primary:hover {
+        background-color: #6c757d;
+    }
+
+.btn-danger {
+    background-color: #d7263d;
+    border: none;
+}
+
+    .btn-danger:hover {
+        background-color: #6c757d;
+    }
+
+.jumbotron {
+    background-color: #2e294e;
+    color: white;
+}
+
+    .jumbotron .btn-primary:hover {
+        background-color: #c5d86d;
+    }
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #2e294e;
+}
+.btn:focus, .btn:active, .btn:active:focus {
+    outline: none;
+    box-shadow: none !important;
+    background-color: #6c757d !important;
+}
+
+.jumbotron .btn:focus, .jumbotron .btn:active, .jumbotron .btn:active:focus {
+    background-color: #c5d86d !important;
+}
+
+a, a:hover {
+    color: #2e294e;
 }

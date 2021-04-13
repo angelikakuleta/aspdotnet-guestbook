@@ -9,7 +9,5 @@ namespace DataAccessLayer.Entities
         [Required]
         [StringLength(30, MinimumLength = 3)]
         public string Name { get; set; }
-
-        public IEnumerable<Entry> Entries { get; set; }
     }
 }

@@ -28,13 +28,7 @@ namespace Guestbook.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            return RedirectToAction(nameof(Entries));
-        }
-
-        [Authorize]
-        public IActionResult Entries()
-        {
-            return View();
+            return RedirectToAction(nameof(AccountEntriesController.Index), "AccountEntriesController");
         }
 
         public IActionResult Register(string returnUrl)

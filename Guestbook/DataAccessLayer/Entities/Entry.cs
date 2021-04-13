@@ -28,5 +28,7 @@ namespace DataAccessLayer.Entities
 
         [Required]
         public bool IsConfirmed { get; set; }
+
+        public string ApplicationUserId { get; set; }
     }
 }
