@@ -10,7 +10,7 @@ namespace DataAccessLayer.Repositories
     {
         Task Add(T entity);
 
-        Task<T> GetById(int id);
+        Task<T> GetById(object id);
 
         Task<IEnumerable<T>> GetAll(
             Expression<Func<T, bool>> filter = null,
@@ -19,7 +19,5 @@ namespace DataAccessLayer.Repositories
         );
 
         void Remove(T entity);
-
-        Task Save();
     }
 }

@@ -1,0 +1,29 @@
+﻿@model IEnumerable<DataAccessLayer.Entities.Entry>
+
+@{
+    ViewData["Title"] = "My entries";
+}
+
+<h1>My entries</h1>
+<p>You can see all your entries and manage them</p>
+
+<hr />
+
+@foreach (var item in Model)
+{
+    <div class="card mt-4 mb-4">
+        <div class="card-header">
+            @Html.DisplayFor(modelItem => item.Name) (@Html.DisplayFor(modelItem => item.Email))
+        </div>
+        <div class="card-body">
+            <footer class="blockquote-footer">Entered on <i>@Html.DisplayFor(modelItem => item.EntryTime)</i></footer>
+            <p class="card-text">@Html.DisplayFor(modelItem => item.Comment)</p>
+            <div class="text-right">
+                <form asp-action="Delete" asp-route-id="@item.Id" method="post">
+                    <a class="btn btn-primary" asp-controller="Entries" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <input class="btn btn-danger d-inline" type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this?')">
+                </form>
+            </div>
+        </div>
+    </div>
+}

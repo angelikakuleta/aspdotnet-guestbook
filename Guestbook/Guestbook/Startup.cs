@@ -1,10 +1,15 @@
 using DataAccessLayer.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
+
+using System;
+using Utility.Services;
 
 namespace Guestbook
 {
@@ -23,6 +28,25 @@ namespace Guestbook
             services.AddDbContext<GuestbookContext>(
                  options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
+
+            services.AddIdentity<IdentityUser, IdentityRole>(option =>
+            {
+                option.Lockout.MaxFailedAccessAttempts = 5;
+                option.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                option.SignIn.RequireConfirmedAccount = true;
+            })
+            .AddEntityFrameworkStores<GuestbookContext>()
+            .AddDefaultTokenProviders();
+
+            var conf = Configuration.GetSection("SendGrid").Get<AuthMessageSenderOptions>();
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(option =>
+                {
+                    option.SendGridKey = conf.SendGridKey;
+                    option.SendGridUser = conf.SendGridUser;
+                }       
+            );
+
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
@@ -43,7 +67,7 @@ namespace Guestbook
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
