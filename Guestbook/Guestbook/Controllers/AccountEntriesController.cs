@@ -14,10 +14,10 @@ namespace Guestbook.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUnitOfWork _db;
 
-        public AccountEntriesController(GuestbookContext context, UserManager<IdentityUser> userManager)
+        public AccountEntriesController(IUnitOfWork db, UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
-            _db = new UnitOfWork(context);
+            _db = db;
         }
 
         [Authorize]

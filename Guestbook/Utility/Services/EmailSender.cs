@@ -3,17 +3,18 @@ using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System.Threading.Tasks;
+using Utility.Config;
 
-namespace Utility.Services
+namespace Utility.Service
 {
     public class EmailSender : IEmailSender
     {
-        public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor)
+        public EmailSender(IOptions<SendGridConfig> optionsAccessor)
         {
             Options = optionsAccessor.Value;
         }
 
-        public AuthMessageSenderOptions Options { get; }
+        public SendGridConfig Options { get; }
 
         public Task SendEmailAsync(string email, string subject, string message)
         {
@@ -25,7 +26,7 @@ namespace Utility.Services
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("kuleta.an@gmail.com", Options.SendGridUser),
+                From = new EmailAddress(Options.SendGridEmail, Options.SendGridUser),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message

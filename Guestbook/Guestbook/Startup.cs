@@ -7,9 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Identity.UI.Services;
-
 using System;
-using Utility.Services;
+using Utility.Config;
+using Utility.Service;
+using DataAccessLayer.Repositories;
 
 namespace Guestbook
 {
@@ -28,6 +29,7 @@ namespace Guestbook
             services.AddDbContext<GuestbookContext>(
                  options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddIdentity<IdentityUser, IdentityRole>(option =>
             {
@@ -38,14 +40,17 @@ namespace Guestbook
             .AddEntityFrameworkStores<GuestbookContext>()
             .AddDefaultTokenProviders();
 
-            var conf = Configuration.GetSection("SendGrid").Get<AuthMessageSenderOptions>();
+            services.AddTransient<ITokenService, TokenService>();
+            services.Configure<JwtConfig>(option =>
+            {
+                Configuration.GetSection("Jwt").Bind(option);
+            });
+
             services.AddTransient<IEmailSender, EmailSender>();
-            services.Configure<AuthMessageSenderOptions>(option =>
-                {
-                    option.SendGridKey = conf.SendGridKey;
-                    option.SendGridUser = conf.SendGridUser;
-                }       
-            );
+            services.Configure<SendGridConfig>(option =>
+            {
+                Configuration.GetSection("SendGrid").Bind(option);
+            });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }

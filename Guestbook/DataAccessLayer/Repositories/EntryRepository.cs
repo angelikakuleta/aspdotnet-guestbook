@@ -18,12 +18,16 @@ namespace DataAccessLayer.Repositories
 
         public async Task<IEnumerable<Entry>> GetAll()
         {
-            return await base.GetAll(orderBy: e => e.OrderByDescending(x => x.EntryTime));
+            return await base.GetAll(
+                filter: x => x.IsConfirmed == true, 
+                orderBy: e => e.OrderByDescending(x => x.EntryTime));
         }
 
         public async Task<IEnumerable<Entry>> GetAll(string? searchString, int? pageNumber, int? pageSize)
         {
-            IQueryable<Entry> query = _db.Entries.OrderByDescending(x => x.EntryTime);
+            IQueryable<Entry> query = _db.Entries
+                .Where(x => x.IsConfirmed == true)
+                .OrderByDescending(x => x.EntryTime);
 
             if (searchString != null)
             {
@@ -42,7 +46,7 @@ namespace DataAccessLayer.Repositories
 
         public async Task<int> Count(string? searchString)
         {
-            IQueryable<Entry> query = _db.Entries;
+            IQueryable<Entry> query = _db.Entries.Where(x => x.IsConfirmed == true);
 
             if (searchString != null)
             {

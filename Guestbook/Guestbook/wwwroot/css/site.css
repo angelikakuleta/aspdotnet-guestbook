@@ -119,3 +119,8 @@ body {
 a, a:hover {
     color: #2e294e;
 }
+
+.validation ul {
+    list-style: none;
+    padding: 0;
+}
